@@ -47,9 +47,9 @@ def move_local(files_waiting,storage_path):
 def send_to_bucket(files_waiting,storage_path):
     # for file in sorted(files_waiting):
         
-    meta= ["aws","s3","cp","Meta", "s3://aftac-test-ore2-temp/testfolder/","--recursive"]
+    meta= ["aws","s3","cp","Meta", "s3://aftac-test-ore2-temp/new/","--recursive"]
         
-    data= ["aws","s3","cp","Data", "s3://aftac-test-ore2-temp/testfolder/","--recursive"]
+    data= ["aws","s3","cp","Data", "s3://aftac-test-ore2-temp/new/","--recursive"]
     subprocess.Popen(meta)
     subprocess.Popen(data)
         # s3.put_object(
