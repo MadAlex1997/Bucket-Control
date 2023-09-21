@@ -50,7 +50,7 @@ def check_waiting(data_path, meta_path):
 def write_metadata(file,sidict, data_path, meta_path):
     json_dict = sidict
     unix_time = datetime.fromtimestamp(float(file.split("_")[1]))
-    gps= gps_now()
+    gps,_= gps_now()
     # If we can get the current gps data then we will otherwise we use the start
     # times for both gps and the system to get a delta
     if gps:

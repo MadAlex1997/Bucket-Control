@@ -4,7 +4,6 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-import boto3
 import shlex, subprocess
 
 
@@ -45,10 +44,10 @@ def move_local(files_waiting,storage_path):
         Path(f"./Data/{file}.wav").rename(f"{storage_path}/{file}.wav")
         Path(f"./Meta/{file}.json").rename(f"{storage_path}/{file}.json")
 
-def send_to_bucket(files_waiting,s3,storage_path):
+def send_to_bucket(files_waiting,storage_path):
     for file in sorted(files_waiting):
-        meta = shlex.split(f"aws s3 mv ./Meta/{file}.json s3//aftac-test-ore2-temp/")
-        data = shlex.split(f"aws s3 mv ./Data/{file}.wav s3//aftac-test-ore2-temp/")
+        meta = shlex.split(f"aws s3 cp ./Meta/{file}.json s3://aftac-test-ore2-temp/PRE\ testfolder/")
+        data = shlex.split(f"aws s3 cp ./Data/{file}.wav s3://aftac-test-ore2-temp/PRE\ testfolder/")
         subprocess.Popen(meta)
         subprocess.Popen(data)
         # s3.put_object(
@@ -66,15 +65,12 @@ def send_to_bucket(files_waiting,s3,storage_path):
         # )
 
 def send():
-    aws_access_key_id = 'YOUR_ACCESS_KEY_ID'
-    aws_secret_access_key = 'YOUR_SECRET_ACCESS_KEY'
-
-    s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+    
     while True:
         files_waiting = get_files_waiting()
         if files_waiting:
             storage_path = make_local_storage()
-            send_to_bucket(files_waiting=files_waiting,s3=s3,storage_path=storage_path)
+            send_to_bucket(files_waiting=files_waiting,storage_path=storage_path)
             
             move_local(files_waiting,storage_path)
             
