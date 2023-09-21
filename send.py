@@ -23,8 +23,8 @@ def get_files_waiting():
     meta_done = os.listdir("./Meta")
     meta_done = [i for i in meta_done if ".json" in i]
     meta_done = [i.replace(".json","") for i in meta_done]
-    files_wating = [data for data in data_waiting if data in meta_done]
-    return files_wating
+    files_waiting = [data for data in data_waiting if data in meta_done]
+    return files_waiting
 
 def make_local_storage():
     """
