@@ -45,13 +45,13 @@ def move_local(files_waiting,storage_path):
         Path(f"./Meta/{file}.json").rename(f"{storage_path}/{file}.json")
 
 def send_to_bucket(files_waiting,storage_path):
-    for file in sorted(files_waiting):
-        # meta = shlex.split(f"aws s3 cp ./Meta/{file}.json s3://aftac-test-ore2-temp/PRE testfolder/")
-        meta= ["aws","s3","cp",f"Meta/{file}.json", "s3://aftac-test-ore2-temp/testfolder/"]
-        # data = shlex.split(f"aws s3 cp ./Data/{file}.wav s3://aftac-test-ore2-temp/PRE testfolder/")
-        data= ["aws","s3","cp",f"Data/{file}.wav", "s3://aftac-test-ore2-temp/testfolder/"]
-        subprocess.Popen(meta)
-        subprocess.Popen(data)
+    # for file in sorted(files_waiting):
+        
+    meta= ["aws","s3","cp","Meta", "s3://aftac-test-ore2-temp/testfolder/","--recursive"]
+        
+    data= ["aws","s3","cp","Data", "s3://aftac-test-ore2-temp/testfolder/","--recursive"]
+    subprocess.Popen(meta)
+    subprocess.Popen(data)
         # s3.put_object(
         #     Body = open(f"./Meta/{file}.json","rb").read(),
         #     Bucket = '''aftac-test-ore2-temp''',
