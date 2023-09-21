@@ -4,7 +4,8 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-import shlex, subprocess
+# import shlex, subprocess
+import os
 
 
 
@@ -47,11 +48,13 @@ def move_local(files_waiting,storage_path):
 def send_to_bucket(files_waiting,storage_path):
     # for file in sorted(files_waiting):
         
-    meta= ["aws","s3","cp","Meta", "s3://aftac-test-ore2-temp/new/","--recursive"]
-        
-    data= ["aws","s3","cp","Data", "s3://aftac-test-ore2-temp/new/","--recursive"]
-    subprocess.Popen(meta)
-    subprocess.Popen(data)
+    # meta= ["aws","s3","cp","Meta", "s3://aftac-test-ore2-temp/new/","--recursive"]
+            
+    # data= ["aws","s3","cp","Data", "s3://aftac-test-ore2-temp/new/","--recursive"]
+    # subprocess.Popen(meta)
+    # subprocess.Popen(data)
+    os.system("aws s3 cp Meta s3://aftac-test-ore2-temp/new/ --recursive")
+    os.system("aws s3 cp Data s3://aftac-test-ore2-temp/new/ --recursive")
         # s3.put_object(
         #     Body = open(f"./Meta/{file}.json","rb").read(),
         #     Bucket = '''aftac-test-ore2-temp''',
