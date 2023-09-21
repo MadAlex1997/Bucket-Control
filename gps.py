@@ -4,8 +4,10 @@ from time import sleep
 from datetime import datetime
 
 #stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
-stream = Serial("/dev/ttyUSB3",115200, timeout=3)
+
 def get_gps():
+    stream = Serial("/dev/ttyUSB3",115200, timeout=3)
+    stream.open()
     stream.write("at+cgpsinfo\r\n".encode())
     sleep(0.1)
     gps_dict  = dict()
