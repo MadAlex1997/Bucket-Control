@@ -19,7 +19,7 @@ def gps_now(num_atempts=50):
             keys: lat[string degrees minutes N/S], lon[string degrees minutes E/W], time[ datetime.datetime(YYY, M, DD, HH, MM, SS)], gps_valid[Bool]
     """
     for i in range(num_atempts):
-        gps = get_gps()
+        gps,_ = get_gps()
         
         if gps["gps_valid"]==False:
             sleep(.1)
