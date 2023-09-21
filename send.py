@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 import boto3
+import shlex, subprocess
 
 
 
@@ -46,19 +47,23 @@ def move_local(files_waiting,storage_path):
 
 def send_to_bucket(files_waiting,s3,storage_path):
     for file in sorted(files_waiting):
-        s3.put_object(
-            Body = open(f"./Meta/{file}.json","rb").read(),
-            Bucket = '''aftac-test-ore2-temp''',
-            key = f"{storage_path}/{file}.json"
+        meta = shlex.split(f"aws s3 mv ./Meta/{file}.json s3//aftac-test-ore2-temp/")
+        data = shlex.split(f"aws s3 mv ./Data/{file}.wav s3//aftac-test-ore2-temp/")
+        subprocess.Popen(meta)
+        subprocess.Popen(data)
+        # s3.put_object(
+        #     Body = open(f"./Meta/{file}.json","rb").read(),
+        #     Bucket = '''aftac-test-ore2-temp''',
+        #     key = f"{storage_path}/{file}.json"
             
-        )
+        # )
 
-        s3.put_object(
-            Body = open(f"./Data/{file}.wav","rb").read(),
-            Bucket = '''aftac-test-ore2-temp''',
-            key= f"{storage_path}/{file}.wav"
+        # s3.put_object(
+        #     Body = open(f"./Data/{file}.wav","rb").read(),
+        #     Bucket = '''aftac-test-ore2-temp''',
+        #     key= f"{storage_path}/{file}.wav"
             
-        )
+        # )
 
 def send():
     aws_access_key_id = 'YOUR_ACCESS_KEY_ID'
