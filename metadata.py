@@ -84,7 +84,9 @@ def write_metadata(file,sidict, data_path, meta_path):
 def metadata():
     #replace with while loop in production
 
-    gps_at_start, process_start_time = gps_now(num_atempts=500)
+    g = gps_now(num_atempts=500)
+    gps_at_start =g[0]
+    process_start_time = g[1]
     if not gps_at_start:
         #determine behavure if no gps at start depends on operator competency
         print("GPS broken")
