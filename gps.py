@@ -22,7 +22,8 @@ def get_gps():
     date = buff[4]
     time = buff[5]
     gps_dict["alt"] = buff[6]
-    gps_dict["datetime"] = datetime.strptime(date+str(int(float(time))),"%d%m%y%H%M%S")
+    # gps_dict["datetime"] = datetime.strptime(date+str(int(float(time))),"%d%m%y%H%M%S")
+    gps_dict["datetime"] = date+str(int(float(time)))
     stream.close()
     gps_dict["gps_valid"]=True
     return gps_dict

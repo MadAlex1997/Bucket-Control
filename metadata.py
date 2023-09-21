@@ -57,9 +57,9 @@ def write_metadata(file,sidict, data_path, meta_path):
     if gps:
         json_dict["lat"] = gps["lat"]
         json_dict["lon"] = gps["lon"]
-        json_dict["gps_date_time"] =gps["datetime"]
+        json_dict["gps_date_time"] =datetime.strptime(gps["datetime"],"%d%m%y%H%M%S")
         system_time_now = np.datetime64(datetime.now())
-        gps_time_now = np.datetime64(gps["datetime"])
+        gps_time_now = np.datetime64(datetime.strptime(gps["datetime"],"%d%m%y%H%M%S"))
         system_time_diff = system_time_now - np.datetime64(unix_time)
         json_dict["start_time_gps"] = str(gps_time_now - system_time_diff)
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
@@ -103,7 +103,7 @@ def metadata():
 
     sidict["lat"] = gps_at_start["lat"]
     sidict["lon"] = gps_at_start["lon"]
-    sidict["gps_date_time"] =gps_at_start["datetime"]
+    sidict["gps_date_time"] = datetime.strptime(gps_at_start["datetime"],"%d%m%y%H%M%S")
 
     system_start_time = np.datetime64(process_start_time)
     gps_start_time = np.datetime64(sidict["gps_date_time"])
