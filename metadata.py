@@ -23,8 +23,8 @@ def gps_now(num_atempts=50):
         
         if gps["gps_valid"]==False:
             sleep(.1)
-            if i == 49:
-                return False
+            if i == num_atempts-1:
+                return False, False
             continue
         elif gps["gps_valid"]==True:
             return gps
