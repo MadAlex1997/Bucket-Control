@@ -13,7 +13,7 @@ def get_gps():
     buff = rec_buff.decode().split(":")[1:][0].replace(" ","")
     if not any([i=="N" or i=="S" for i in buff]):
         gps_dict["gps_valid"]=False
-        return gps_dict, False
+        return False
     buff = buff.split(",")
     gps_dict["lat"] = buff[0]+buff[1]
     gps_dict["lon"] = buff[2]+buff[3]
@@ -23,7 +23,7 @@ def get_gps():
     gps_dict["datetime"] = datetime.strptime(date+str(int(float(time))),"%d%m%y%H%M%S")
     stream.close()
     gps_dict["gps_valid"]=True
-    return gps_dict, datetime.now().timestamp()
+    return gps_dict
 
 if __name__  == "__main__":
     print(get_gps())
