@@ -27,7 +27,7 @@ def gps_now(num_atempts=50):
                 return False, False
             continue
         elif gps["gps_valid"]==True:
-            return gps,datetime.now().timestamp()
+            return gps,datetime.now()
 
 
 
