@@ -6,6 +6,7 @@ import os
 from time import sleep
 from hashlib import sha256
 from gps import get_gps
+from pathlib import Path
 # from pigps import GPS
 
 
@@ -81,10 +82,13 @@ def write_metadata(file,sidict, data_path, meta_path):
     
     with open(f"{meta_path}{file}.json","w+") as jfile:
         json.dump(json_dict,jfile)
-        
-def metadata():
-    #replace with while loop in production
+    
+def move_to_waiting(file, data_path, meta_path, waiting_path):
+    Path(f"{data_path}{file}.wav").rename(f"{waiting_path}{file}.wav")
+    Path(f"{meta_path}{file}.json").rename(f"{waiting_path}{file}.json")
 
+def metadata():
+    
     g = gps_now(num_atempts=500)
     gps_at_start =g[0]
     process_start_time = g[1]
@@ -92,12 +96,12 @@ def metadata():
         #determine behavure if no gps at start depends on operator competency
         print("GPS broken")
         return False
-        pass
 
     with open("./sensor_info.json","r") as si:
         sidict = json.load(si)
         data_path = sidict["data_path"]
         meta_path = sidict["meta_path"]
+        waiting_path = sidict["waiting_path"]
     
     #get GPS data at start time to fall back on if issues with GPS
 
@@ -111,12 +115,14 @@ def metadata():
     sidict["delta_T_SysvGPS_ms"] = (system_start_time-gps_start_time)/np.timedelta64(1,"ms")
 
     while True:
-        data_waiting = check_waiting(data_path=data_path, meta_path=meta_path)
+        data_waiting = check_waiting(waiting_path = waiting_path)
         if data_waiting:
             for file in data_waiting:
                 write_metadata(file=file, sidict=sidict, data_path=data_path, meta_path=meta_path)
+                move_to_waiting(file=file, data_path=data_path, meta_path=meta_path, waiting_path=waiting_path)
+
         else:
-            # sleep(10)
+            sleep(5)
             continue
 if __name__ == "__main__":
     metadata()
