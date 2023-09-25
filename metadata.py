@@ -115,7 +115,7 @@ def metadata():
     sidict["delta_T_SysvGPS_ms"] = (system_start_time-gps_start_time)/np.timedelta64(1,"ms")
 
     while True:
-        data_waiting = check_waiting(waiting_path = waiting_path)
+        data_waiting = check_waiting(data_path=data_path,meta_path=meta_path)
         if data_waiting:
             for file in data_waiting:
                 write_metadata(file=file, sidict=sidict, data_path=data_path, meta_path=meta_path)

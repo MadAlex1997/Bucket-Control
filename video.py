@@ -12,7 +12,7 @@ def record_video(cam, frames, duration, file_prefix, video_path):
     now = datetime.now().timestamp()
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fourcc = cv2.VideoWriter_fourcc(*"DIVX")
+    fourcc = cv2.VideoWriter_fourcc(*"MP4V")
 
     writer = cv2.VideoWriter(f"{video_path}{file_prefix}_{now}.mp4",
                              fourcc=fourcc,

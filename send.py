@@ -77,7 +77,7 @@ def send():
         waiting_path = sidict["waiting_path"]
         sent_path = sidict["sent_path"]
     while True:
-        files_waiting = get_files_waiting()
+        files_waiting = get_files_waiting(waiting_path=waiting_path)
         if files_waiting:
             storage_path = make_local_storage()
             done_list = send_to_bucket(waiting_path=waiting_path ,storage_path=storage_path)
