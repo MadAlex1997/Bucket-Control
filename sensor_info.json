@@ -4,7 +4,10 @@
     "collect_duration": 30,
     "location" : "Insert location decription",
     "data_path" : "./Data/",
+    "video_path": "./Video/",
     "meta_path" : "./Meta/",
+    "sent_path" : "./Sent/",
+    "waiting_path":"./Waiting/",
     "mac_address" : "put mac_address here",
     "Bucket_name" : "bname"
 }
