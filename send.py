@@ -26,7 +26,7 @@ def make_local_storage(sent_path):
     now = datetime.now()
     year, month, day, hrs = now.year, now.month, now.day, now.hour
     storage_path = f"{year}/{month}/{day}/{hrs}"
-    Path({sent_path}+storage_path).mkdir(parents=True, exist_ok=True)
+    Path(sent_path+storage_path).mkdir(parents=True, exist_ok=True)
     return storage_path
 
 def move_local(files_waiting,storage_path,waiting_path,sent_path):
@@ -59,7 +59,7 @@ def send_to_bucket(waiting_path, storage_path, files_waiting):
             pass
         try:
             run(["aws","s3","cp",f"{waiting_path}{file}.wav",f"s3://aftac-test-ore2-temp/{storage_path}/"],check=True)
-            done_list.append(f"{waiting_path}{file}.wav")
+            done_list.append(f"{file}.wav")
         except:
             print(f"{file}.wav could not be sent to bucket")
             pass
@@ -79,10 +79,10 @@ def send():
     while True:
         files_waiting = get_files_waiting(waiting_path=waiting_path)
         if files_waiting:
-            storage_path = make_local_storage()
-            done_list = send_to_bucket(waiting_path=waiting_path ,storage_path=storage_path)
+            storage_path = make_local_storage(sent_path=sent_path)
+            done_list = send_to_bucket(waiting_path=waiting_path ,storage_path=storage_path,files_waiting=files_waiting)
             
-            move_local(files_waiting=done_list, storage_path=storage_path,sent_path=sent_path)
+            move_local(files_waiting=done_list, storage_path=storage_path,waiting_path=waiting_path,sent_path=sent_path)
             
 
 
