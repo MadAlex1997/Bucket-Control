@@ -58,6 +58,8 @@ def write_metadata(file,sidict, data_path, meta_path):
     if gps:
         json_dict["lat"] = gps["lat"]
         json_dict["lon"] = gps["lon"]
+        json_dict["lat_deg"] = gps["lat_deg"]
+        json_dict["lon_deg"] = gps["lon_deg"]
         json_dict["gps_date_time"] = str(np.datetime64(datetime.strptime(gps["datetime"],"%d%m%y%H%M%S")))
         system_time_now = np.datetime64(datetime.now())
         gps_time_now = np.datetime64(datetime.strptime(gps["datetime"],"%d%m%y%H%M%S"))
@@ -92,7 +94,7 @@ def metadata():
     g = gps_now(num_atempts=500)
     gps_at_start =g[0]
     process_start_time = g[1]
-    if not gps_at_start:
+    if not gps_at_start["gps_valid"]:
         #determine behavure if no gps at start depends on operator competency
         print("GPS broken")
         return False
@@ -107,6 +109,8 @@ def metadata():
 
     sidict["lat"] = gps_at_start["lat"]
     sidict["lon"] = gps_at_start["lon"]
+    sidict["lat_deg"] = gps_at_start["lat_deg"]
+    sidict["lon_deg"] = gps_at_start["lon_deg"]
     sidict["gps_date_time"] = gps_at_start["datetime"]
     
 

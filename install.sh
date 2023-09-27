@@ -4,7 +4,7 @@ sudo apt install pip -y
 pip install sounddevice scipy pyserial opencv-python
 curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
-sudo ./aws/install
+sudo bash ./aws/install
 sudo apt-get install libportaudio2 -y
 sudo apt-get update -y
 sudo apt-get install ffmpeg libsm6 libxext6  -y
