@@ -37,7 +37,7 @@ def get_gps():
     gps_dict["lat"] = buff[0]+buff[1]
     gps_dict["lon"] = buff[2]+buff[3]
     gps_dict["lat_deg"] = lat_dec(buff0=buff[0]) * nors(buff1=buff[1])
-    gps_dict["lat_deg"] = lon_dec(buff2=buff[2]) * eorw(buff3=buff[3])
+    gps_dict["lon_deg"] = lon_dec(buff2=buff[2]) * eorw(buff3=buff[3])
     date = buff[4]
     time = buff[5]
     gps_dict["alt"] = buff[6]
