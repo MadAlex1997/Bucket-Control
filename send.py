@@ -34,7 +34,15 @@ def move_local(files_waiting,storage_path,waiting_path,sent_path):
     Move the files to the local storage
     """
     for file in files_waiting:
-        Path(f"{waiting_path}{file}").rename(f"{sent_path}{storage_path}/{file}")
+        try:
+            Path(f"{waiting_path}{file}.json").rename(f"{sent_path}{storage_path}/{file}.json")
+        except(FileNotFoundError):
+            continue
+        try:
+            Path(f"{waiting_path}{file}.wav").rename(f"{sent_path}{storage_path}/{file}.wav")
+        except(FileNotFoundError):
+            continue
+
     # for file in files_waiting:
     #     Path(f"{waiting_path}{file}.wav").rename(f"{sent_path}{storage_path}/{file}.wav")
     #     Path(f"{waiting_path}{file}.json").rename(f"{sent_path}{storage_path}/{file}.json")
@@ -50,23 +58,30 @@ def send_to_bucket(waiting_path, storage_path, files_waiting):
     If files are sent unsucessfully (cuasing an error) don't add them to the list
     """
     done_list = list()
-    for file in sorted(files_waiting):
-        try:
-            run(["aws","s3","cp",f"{waiting_path}{file}.json",f"s3://aftac-test-ore2-temp/{storage_path}/"],check=True)
-            done_list.append(f"{file}.json")
-        except:
-            print(f"{file}.json could not be sent to bucket")
-            pass
-        try:
-            run(["aws","s3","cp",f"{waiting_path}{file}.wav",f"s3://aftac-test-ore2-temp/{storage_path}/"],check=True)
-            done_list.append(f"{file}.wav")
-        except:
-            print(f"{file}.wav could not be sent to bucket")
-            pass
+    # for file in sorted(files_waiting):
+    #     try:
+    #         run(["aws","s3","cp",f"{waiting_path}{file}.json",f"s3://aftac-test-ore2-temp/{storage_path}/"],check=True)
+    #         done_list.append(f"{file}.json")
+    #     except:
+    #         print(f"{file}.json could not be sent to bucket")
+    #         pass
+    #     try:
+    #         run(["aws","s3","cp",f"{waiting_path}{file}.wav",f"s3://aftac-test-ore2-temp/{storage_path}/"],check=True)
+    #         done_list.append(f"{file}.wav")
+    #     except:
+    #         print(f"{file}.wav could not be sent to bucket")
+    #         pass
 
-        return done_list
         
+    
+    try:
+        run(["aws","s3","cp",f"{waiting_path}",f"s3://aftac-test-ore2-temp/{storage_path}/","--recursive"],check=True)
+        done_list=files_waiting
+    except:
+        print(f"dump to bucket unsucessful")
+        pass
     # os.system(f"aws s3 cp {waiting_path} s3://aftac-test-ore2-temp/{storage_path}/ --recursive")
+    return done_list
    
 
 def send():
