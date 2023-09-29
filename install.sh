@@ -13,6 +13,8 @@ cd Bucket-Control/
 mkdir Waiting
 mkdir Sent
 mkdir Video
+mkdir Data
+mkdir Meta
 sudo chmod 777 *
 python meta_setup.py
 aws configure
