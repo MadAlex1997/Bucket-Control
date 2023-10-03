@@ -26,7 +26,7 @@ def record():
         start_time = datetime.now().timestamp()
         defualt_in= sd.query_devices(sd.default.device[0])
         device_sample_rate = defualt_in["default_samplerate"]
-        recorder = rec(frames=int(seconds*device_sample_rate), samplerate=device_sample_rate,channels=1)
+        recorder = rec(frames=int(seconds*device_sample_rate), samplerate=device_sample_rate,channels=1,dtype=np.int16)
         wait()
         recorder = resample(x=recorder,num=int(samplerate*seconds))
         wavfile.write(filename=f"{data_path}{sensor_name}_{start_time}.wav",

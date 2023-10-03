@@ -8,7 +8,7 @@ from hashlib import sha256
 from gps import get_gps
 from pathlib import Path
 # from pigps import GPS
-
+from zipfile import ZipFile
 
 # gps = GPS()
 
@@ -80,22 +80,34 @@ def write_metadata(file,sidict, data_path, meta_path):
     with open(f"{data_path}{file}.wav","rb") as hash_file:
         checksum = sha256(hash_file.read()).hexdigest()
     
-    json_dict["checksum"] =checksum
+    json_dict["checksum"] = checksum
     
     with open(f"{meta_path}{file}.json","w+") as jfile:
-        json.dump(json_dict,jfile)
+        json.dump(json_dict, jfile)
     
 def move_to_waiting(file, data_path, meta_path, waiting_path):
-    Path(f"{data_path}{file}.wav").rename(f"{waiting_path}{file}.wav")
-    Path(f"{meta_path}{file}.json").rename(f"{waiting_path}{file}.json")
+    zip_name = f"{waiting_path}{file}.zip"
+    with ZipFile(zip_name, "w")as zipf:
+        if os.path.isfile(f"{data_path}{file}.wav"):
+            zipf.write(f"{data_path}{file}.wav")
+        if os.path.isfile(f"{meta_path}{file}.json"):
+            zipf.write(f"{meta_path}{file}.json")
+    Path(f"{data_path}{file}.wav").unlink(missing_ok=True)
+    Path(f"{meta_path}{file}.json").unlink(missing_ok=True)
 
 def metadata():
+    """
+    Metadata main function
+    records GPS info
+    gives corrected time for
+    creates checksum
     
+    """
     g = gps_now(num_atempts=500)
     gps_at_start =g[0]
     process_start_time = g[1]
     if not gps_at_start["gps_valid"]:
-        #determine behavure if no gps at start depends on operator competency
+        #determine behavure if no gps at start, depends on expected operator competencies
         print("GPS broken")
         return False
 
@@ -129,5 +141,6 @@ def metadata():
         else:
             sleep(5)
             continue
+
 if __name__ == "__main__":
     metadata()
