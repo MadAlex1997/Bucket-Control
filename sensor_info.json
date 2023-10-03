@@ -11,5 +11,6 @@
     "not_sent":"./Not",
     "mac_address" : "put mac_address here",
     "Bucket_name" : "bname",
-    "Dtype" : "f4/np.float32" 
+    "Dtype" : "f4/np.float32",
+    "Channel":"audio"
 }

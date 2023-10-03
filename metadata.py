@@ -56,6 +56,7 @@ def write_metadata(file,sidict, data_path, meta_path):
     # If we can get the current gps data then we will otherwise we use the start
     # times for both gps and the system to get a delta
     if gps:
+        #TODO double check time logic
         json_dict["lat"] = gps["lat"]
         json_dict["lon"] = gps["lon"]
         json_dict["lat_deg"] = gps["lat_deg"]
