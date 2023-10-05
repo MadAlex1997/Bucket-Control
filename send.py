@@ -46,6 +46,9 @@ def move_local(files_waiting,storage_path,waiting_path,sent_path):
     #     Path(f"{waiting_path}{file}.json").rename(f"{sent_path}{storage_path}/{file}.json")
 
 def few_files(waiting_path, storage_path, files_waiting):
+    """
+    Using the aws cli send all data in the waiting folder to the bucket
+    """
     done_list = list()
     try:
         run(["aws","s3","cp",f"{waiting_path}",f"s3://aftac-test-ore2-temp/{storage_path}/","--recursive","--cli-read-timeout",150],check=True)
@@ -55,6 +58,10 @@ def few_files(waiting_path, storage_path, files_waiting):
     return done_list
 
 def many_files(waiting_path, storage_path, files_waiting):
+    """
+    Unused function: receiving system cannot handle zip of zips
+    Makes a zip of zips to move more files across with a timeout of 4 minutes
+    """
     done_list = list()
     try:
         zip_name = f"dump_{datetime.now().timestamp()}.zip"
@@ -73,7 +80,18 @@ def many_files(waiting_path, storage_path, files_waiting):
         
     return done_list
 
-def send_to_bucket(waiting_path, storage_path, files_waiting):
+def move_to_not(files_waiting, waiting_path,storage_path,not_path):
+    """
+    If there are more than 10 zip files waiting the backlog is greater than five minutes
+    so the files are moved to the `Not` folder 
+    """
+    for file in files_waiting:
+        try:
+            Path(f"{waiting_path}{file}.zip").rename(f"{not_path}{storage_path}/{file}.zip")
+        except(FileNotFoundError):
+            continue
+
+def send_to_bucket(waiting_path, storage_path, files_waiting, not_path):
     """
     Send the files in the waiting_path folder to the s3 bucket in a folder defined by storage path
 
@@ -84,7 +102,13 @@ def send_to_bucket(waiting_path, storage_path, files_waiting):
     If files are sent unsucessfully (cuasing an error) don't add them to the list
     """
     if len(files_waiting)>10:
-        done_list = many_files(waiting_path, storage_path, files_waiting)
+        #done_list = many_files(waiting_path, storage_path, files_waiting)
+        move_to_not(files_waiting=files_waiting,
+                    waiting_path=waiting_path,
+                    storage_path=storage_path,
+                    not_path=not_path)
+        done_list = []
+
     else:
         done_list = few_files(waiting_path, storage_path, files_waiting)
     return done_list
@@ -92,16 +116,18 @@ def send_to_bucket(waiting_path, storage_path, files_waiting):
 def send():
     with open("./sensor_info.json","r") as si:
         sidict = json.load(si)
-        data_path = sidict["data_path"]
-        meta_path = sidict["meta_path"]
         waiting_path = sidict["waiting_path"]
         sent_path = sidict["sent_path"]
+        not_path = sidict["not_sent"]
     while True:
         files_waiting = get_files_waiting(waiting_path=waiting_path)
         #TODO give files a 5 minute valid span from current time if greater than that move to ./Not
         if files_waiting:
             storage_path = make_local_storage(sent_path=sent_path)
-            done_list = send_to_bucket(waiting_path=waiting_path ,storage_path=storage_path,files_waiting=files_waiting)
+            done_list = send_to_bucket(waiting_path=waiting_path,
+                                       storage_path=storage_path,
+                                       files_waiting=files_waiting,
+                                       not_path = not_path)
             
             move_local(files_waiting=done_list, storage_path=storage_path,waiting_path=waiting_path,sent_path=sent_path)
             

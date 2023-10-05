@@ -20,6 +20,7 @@ def gps_now(num_atempts=50):
             keys: lat[string degrees minutes N/S], lon[string degrees minutes E/W], time[ datetime.datetime(YYY, M, DD, HH, MM, SS)], gps_valid[Bool]
     """
     for i in range(num_atempts):
+        start_time = datetime.now()
         gps = get_gps()
         
         if gps["gps_valid"]==False:
@@ -28,7 +29,7 @@ def gps_now(num_atempts=50):
                 return False, False
             continue
         elif gps["gps_valid"]==True:
-            return gps,datetime.now()
+            return gps, start_time
 
 
 
@@ -69,7 +70,7 @@ def write_metadata(file,sidict, data_path, meta_path):
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
     else:
         time_delta = np.timedelta64(sidict["delta_T_SysvGPS_ms"], "ms")
-        json_dict["start_time_gps"] = str(np.datetime64(unix_time) - time_delta)
+        json_dict["start_time_gps"] = str(np.datetime64(unix_time) + np.timedelta64(time_delta,"ms"))
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
         
 
@@ -130,7 +131,7 @@ def metadata():
     system_start_time = np.datetime64(process_start_time)
     gps_start_time = np.datetime64(datetime.strptime(sidict["gps_date_time"],"%d%m%y%H%M%S"))
     
-    sidict["delta_T_SysvGPS_ms"] = (system_start_time-gps_start_time)/np.timedelta64(1,"ms")
+    sidict["delta_T_SysvGPS_ms"] = (gps_start_time-system_start_time)/np.timedelta64(1,"ms")
 
     while True:
         data_waiting = check_waiting(data_path=data_path,meta_path=meta_path)

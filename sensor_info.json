@@ -1,6 +1,6 @@
 {
     "sensor_name" : "InsertSensorName",
-    "samplerate" : 16000,
+    "sample_rate" : 16000,
     "collect_duration": 30,
     "location" : "Insert location decription",
     "data_path" : "./Data/",
@@ -10,7 +10,7 @@
     "waiting_path":"./Waiting/",
     "not_sent":"./Not",
     "mac_address" : "put mac_address here",
-    "Bucket_name" : "bname",
-    "Dtype" : "f4/np.float32",
-    "Channel":"audio"
+    "Bucket_name" : "s3://aftac-test-ore2-temp/",
+    "dtype" : "f4/np.float32",
+    "channel":"audio"
 }
