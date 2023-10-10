@@ -11,7 +11,7 @@ import sounddevice as sd
 with open("./sensor_info.json","r") as si:
     sidict = json.load(si)
     seconds = sidict["collect_duration"]
-    samplerate = sidict["samplerate"]
+    samplerate = sidict["sample_rate"]
     data_path = sidict["data_path"]
     sensor_name = sidict["sensor_name"]
          
