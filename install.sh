@@ -10,11 +10,14 @@ sudo apt-get update -y
 sudo apt-get install ffmpeg libsm6 libxext6  -y
 sudo chmod 777 Bucket-Control
 cd Bucket-Control/
+sudo mv main.sh /main/main.sh
+sudo cp /main/Bucket-Control/rc.local /etc/rc.local
 mkdir Waiting
 mkdir Sent
 mkdir Video
 mkdir Data
 mkdir Meta
+mkdir Not
 sudo chmod 777 *
 python meta_setup.py
 aws configure

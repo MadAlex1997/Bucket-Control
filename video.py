@@ -36,7 +36,7 @@ def video():
         cam.set(cv2.CAP_PROP_FRAME_WIDTH,480)
     while True:
         record_video(cam=cam,
-                     frames=20,
+                     frames=5,
                      duration=30,
                      file_prefix=sensor_name,
                      video_path=video_path

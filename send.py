@@ -51,7 +51,7 @@ def few_files(waiting_path, storage_path, files_waiting):
     """
     done_list = list()
     try:
-        run(["aws","s3","cp",f"{waiting_path}",f"s3://aftac-test-ore2-temp/{storage_path}/","--recursive","--cli-read-timeout",150],check=True)
+        run(["aws","s3","cp",f"{waiting_path}",f"s3://aftac-test-ore2-temp/{storage_path}/","--recursive","--cli-read-timeout","150"],check=True)
         done_list=files_waiting
     except:
         print(f"dump to bucket unsucessful")
@@ -71,7 +71,7 @@ def many_files(waiting_path, storage_path, files_waiting):
                     zipf.write(waiting_path+i+".zip")
                 
         
-        run(["aws","s3","cp",f"{waiting_path}{zip_name}",f"s3://aftac-test-ore2-temp/{storage_path}/","--cli-read-timeout",240],check=True)
+        run(["aws","s3","cp",f"{waiting_path}{zip_name}",f"s3://aftac-test-ore2-temp/{storage_path}/","--cli-read-timeout","240"],check=True)
         Path(waiting_path+zip_name).unlink(missing_ok=True)
         done_list=files_waiting
     except:
