@@ -8,7 +8,7 @@
     "meta_path" : "./Meta/",
     "sent_path" : "./Sent/",
     "waiting_path":"./Waiting/",
-    "not_sent":"./Not",
+    "not_sent":"./Not/",
     "mac_address" : "put mac_address here",
     "Bucket_name" : "s3://aftac-test-ore2-temp/",
     "dtype" : "f4/np.float32",

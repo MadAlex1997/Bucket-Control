@@ -14,7 +14,7 @@ if stream.inWaiting():
         rec_buff = stream.read(stream.inWaiting()).decode()
         print(rec_buff)
         stream.write("AT+CUSBPIDSWITCH=9011,1,1\r\n".encode())
-        sleep(30)
+        sleep(60)
         if stream.inWaiting():
             rec_buff = stream.read(stream.inWaiting()).decode()
             print(rec_buff)
