@@ -8,7 +8,7 @@ from hashlib import sha256
 from gps import get_gps
 from pathlib import Path
 # from pigps import GPS
-
+from zipfile import ZipFile
 
 # gps = GPS()
 
@@ -20,6 +20,7 @@ def gps_now(num_atempts=50):
             keys: lat[string degrees minutes N/S], lon[string degrees minutes E/W], time[ datetime.datetime(YYY, M, DD, HH, MM, SS)], gps_valid[Bool]
     """
     for i in range(num_atempts):
+        start_time = datetime.now()
         gps = get_gps()
         
         if gps["gps_valid"]==False:
@@ -28,7 +29,7 @@ def gps_now(num_atempts=50):
                 return False, False
             continue
         elif gps["gps_valid"]==True:
-            return gps,datetime.now()
+            return gps, start_time
 
 
 
@@ -56,6 +57,7 @@ def write_metadata(file,sidict, data_path, meta_path):
     # If we can get the current gps data then we will otherwise we use the start
     # times for both gps and the system to get a delta
     if gps:
+        #TODO double check time logic
         json_dict["lat"] = gps["lat"]
         json_dict["lon"] = gps["lon"]
         json_dict["lat_deg"] = gps["lat_deg"]
@@ -68,7 +70,7 @@ def write_metadata(file,sidict, data_path, meta_path):
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
     else:
         time_delta = np.timedelta64(sidict["delta_T_SysvGPS_ms"], "ms")
-        json_dict["start_time_gps"] = str(np.datetime64(unix_time) - time_delta)
+        json_dict["start_time_gps"] = str(np.datetime64(unix_time) + np.timedelta64(time_delta,"ms"))
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
         
 
@@ -80,22 +82,34 @@ def write_metadata(file,sidict, data_path, meta_path):
     with open(f"{data_path}{file}.wav","rb") as hash_file:
         checksum = sha256(hash_file.read()).hexdigest()
     
-    json_dict["checksum"] =checksum
+    json_dict["checksum"] = checksum
     
     with open(f"{meta_path}{file}.json","w+") as jfile:
-        json.dump(json_dict,jfile)
+        json.dump(json_dict, jfile)
     
 def move_to_waiting(file, data_path, meta_path, waiting_path):
-    Path(f"{data_path}{file}.wav").rename(f"{waiting_path}{file}.wav")
-    Path(f"{meta_path}{file}.json").rename(f"{waiting_path}{file}.json")
+    zip_name = f"{waiting_path}{file}.zip"
+    with ZipFile(zip_name, "w")as zipf:
+        if os.path.isfile(f"{data_path}{file}.wav"):
+            zipf.write(f"{data_path}{file}.wav")
+        if os.path.isfile(f"{meta_path}{file}.json"):
+            zipf.write(f"{meta_path}{file}.json")
+    Path(f"{data_path}{file}.wav").unlink(missing_ok=True)
+    Path(f"{meta_path}{file}.json").unlink(missing_ok=True)
 
 def metadata():
+    """
+    Metadata main function
+    records GPS info
+    gives corrected time for
+    creates checksum
     
+    """
     g = gps_now(num_atempts=500)
     gps_at_start =g[0]
     process_start_time = g[1]
     if not gps_at_start["gps_valid"]:
-        #determine behavure if no gps at start depends on operator competency
+        #determine behavure if no gps at start, depends on expected operator competencies
         print("GPS broken")
         return False
 
@@ -117,7 +131,7 @@ def metadata():
     system_start_time = np.datetime64(process_start_time)
     gps_start_time = np.datetime64(datetime.strptime(sidict["gps_date_time"],"%d%m%y%H%M%S"))
     
-    sidict["delta_T_SysvGPS_ms"] = (system_start_time-gps_start_time)/np.timedelta64(1,"ms")
+    sidict["delta_T_SysvGPS_ms"] = (gps_start_time-system_start_time)/np.timedelta64(1,"ms")
 
     while True:
         data_waiting = check_waiting(data_path=data_path,meta_path=meta_path)
@@ -129,5 +143,6 @@ def metadata():
         else:
             sleep(5)
             continue
+
 if __name__ == "__main__":
     metadata()
