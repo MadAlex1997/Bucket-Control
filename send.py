@@ -28,6 +28,7 @@ def make_local_storage(sent_path):
     year, month, day, hrs = now.year, now.month, now.day, now.hour
     storage_path = f"{year}/{month}/{day}/{hrs}"
     Path(sent_path+storage_path).mkdir(parents=True, exist_ok=True)
+
     return storage_path
 
 def move_local(files_waiting,storage_path,waiting_path,sent_path):
@@ -71,7 +72,7 @@ def many_files(waiting_path, storage_path, files_waiting):
                     zipf.write(waiting_path+i+".zip")
                 
         
-        run(["aws","s3","cp",f"{waiting_path}{zip_name}",f"s3://aftac-test-ore2-temp/{storage_path}/","--cli-read-timeout","240"],check=True)
+        run(["aws","s3","cp",f"{waiting_path}{zip_name}",f"s3://aftac-test-ore2-temp/{storage_path}/","--cli-read-timeout",240],check=True)
         Path(waiting_path+zip_name).unlink(missing_ok=True)
         done_list=files_waiting
     except:
@@ -87,7 +88,8 @@ def move_to_not(files_waiting, waiting_path,storage_path,not_path):
     """
     for file in files_waiting:
         try:
-            Path(f"{waiting_path}{file}.zip").rename(f"{not_path}{storage_path}/{file}.zip")
+            Path(not_path+storage_path).mkdir(parents=True, exist_ok=True)
+            Path(f"{waiting_path}{file}").rename(f"{not_path}{storage_path}/{file}.zip")
         except(FileNotFoundError):
             continue
 
