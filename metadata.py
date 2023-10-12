@@ -90,12 +90,11 @@ def write_metadata(file,sidict, data_path, meta_path):
 def move_to_waiting(file, data_path, meta_path, waiting_path):
     zip_name = f"{waiting_path}{file}.zip"
     with ZipFile(zip_name, "w")as zipf:
-        if os.path.isfile(f"{data_path}{file}.wav"):
-            zipf.write(f"{data_path}{file}.wav")
-        if os.path.isfile(f"{meta_path}{file}.json"):
-            zipf.write(f"{meta_path}{file}.json")
-    Path(f"{data_path}{file}.wav").unlink(missing_ok=True)
-    Path(f"{meta_path}{file}.json").unlink(missing_ok=True)
+        if os.path.isfile(f"{data_path}{file}.wav") and os.path.isfile(f"{meta_path}{file}.json"):
+            zipf.write(f"{data_path}{file}.wav",arcname=f"{file}.wav")
+            zipf.write(f"{meta_path}{file}.json",arcname=f"{file}.json")
+            Path(f"{data_path}{file}.wav").unlink(missing_ok=True)
+            Path(f"{meta_path}{file}.json").unlink(missing_ok=True)
 
 def metadata():
     """
