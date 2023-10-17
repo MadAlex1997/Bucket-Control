@@ -109,7 +109,7 @@ def send_to_bucket(waiting_path, storage_path, files_waiting, not_path,aws_bucke
                     waiting_path=waiting_path,
                     storage_path=storage_path,
                     not_path=not_path)
-        done_list = []
+        done_list = files_waiting
 
     else:
         done_list = few_files(waiting_path, storage_path, files_waiting,aws_bucket)
