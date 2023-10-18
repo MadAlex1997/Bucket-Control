@@ -12,5 +12,6 @@
     "mac_address" : "put mac_address here",
     "Bucket_name" : "s3://aftac-test-ore2-temp/",
     "dtype" : "f4/np.float32",
-    "channel":"audio"
+    "channel":"audio",
+    "staname":"RH{vol_number}s{sensor_number 2 digit}"
 }
