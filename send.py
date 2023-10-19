@@ -14,10 +14,9 @@ def get_files_waiting(waiting_path):
     Get the names of the files that are waiting to be sent
     """
 
-    data_waiting = os.listdir(waiting_path)
-    data_waiting = [f for f in data_waiting if ".zip" in f]
-    files_waiting = list(set([".".join(i.split(".")[:-1]) for i in data_waiting]))
-
+    files_waiting = os.listdir(waiting_path)
+    files_waiting = [f for f in files_waiting if ".zip" in f]
+    
     return files_waiting
 
 def make_local_storage(sent_path):
@@ -37,14 +36,11 @@ def move_local(files_waiting,storage_path,waiting_path,sent_path):
     """
     for file in files_waiting:
         try:
-            Path(f"{waiting_path}{file}.zip").rename(f"{sent_path}{storage_path}/{file}.zip")
+            Path(f"{waiting_path}{file}").rename(f"{sent_path}{storage_path}/{file}")
         except(FileNotFoundError):
             continue
         
 
-    # for file in files_waiting:
-    #     Path(f"{waiting_path}{file}.wav").rename(f"{sent_path}{storage_path}/{file}.wav")
-    #     Path(f"{waiting_path}{file}.json").rename(f"{sent_path}{storage_path}/{file}.json")
 
 def few_files(waiting_path, storage_path, files_waiting,aws_bucket):
     """
@@ -58,28 +54,6 @@ def few_files(waiting_path, storage_path, files_waiting,aws_bucket):
         print(f"dump to bucket unsucessful")
     return done_list
 
-# def many_files(waiting_path, storage_path, files_waiting):
-#     """
-#     Unused function: receiving system cannot handle zip of zips
-#     Makes a zip of zips to move more files across with a timeout of 4 minutes
-#     """
-#     done_list = list()
-#     try:
-#         zip_name = f"dump_{datetime.now().timestamp()}.zip"
-#         with ZipFile(waiting_path+zip_name,"w") as zipf:
-#             for i in files_waiting:
-#                 if os.path.isfile(waiting_path+i+".zip"):
-#                     zipf.write(waiting_path+i+".zip")
-                
-        
-#         run(["aws","s3","cp",f"{waiting_path}{zip_name}",f"s3://aftac-test-ore2-temp/{storage_path}/","--cli-read-timeout",240],check=True)
-#         Path(waiting_path+zip_name).unlink(missing_ok=True)
-#         done_list=files_waiting
-#     except:
-#         print(f"dump to bucket unsucessful")
-#         Path(waiting_path+zip_name).unlink(missing_ok=True)
-        
-#     return done_list
 
 def move_to_not(files_waiting, waiting_path,not_path):
     """
@@ -89,7 +63,7 @@ def move_to_not(files_waiting, waiting_path,not_path):
     for file in files_waiting:
         try:
             Path(not_path).mkdir(parents=True, exist_ok=True)
-            Path(f"{waiting_path}{file}").rename(f"{not_path}{file}.zip")
+            Path(f"{waiting_path}{file}").rename(f"{not_path}{file}")
         except(FileNotFoundError):
             continue
 
@@ -104,7 +78,6 @@ def send_to_bucket(waiting_path, storage_path, files_waiting, not_path,aws_bucke
     If files are sent unsucessfully (cuasing an error) don't add them to the list
     """
     if len(files_waiting)>10:
-        #done_list = many_files(waiting_path, storage_path, files_waiting)
         move_to_not(files_waiting=files_waiting,
                     waiting_path=waiting_path,
                     storage_path=storage_path,
@@ -124,7 +97,6 @@ def send():
         aws_bucket = sidict["Bucket_name"]
     while True:
         files_waiting = get_files_waiting(waiting_path=waiting_path)
-        #TODO give files a 5 minute valid span from current time if greater than that move to ./Not
         if files_waiting:
             storage_path = make_local_storage(sent_path=sent_path)
             done_list = send_to_bucket(waiting_path=waiting_path,
@@ -132,8 +104,8 @@ def send():
                                        files_waiting=files_waiting,
                                        not_path = not_path,
                                        aws_bucket=aws_bucket)
-            
-            move_local(files_waiting=done_list, storage_path=storage_path,waiting_path=waiting_path,sent_path=sent_path)
+            if done_list:
+                move_local(files_waiting=done_list, storage_path=storage_path,waiting_path=waiting_path,sent_path=sent_path)
             
 
 
