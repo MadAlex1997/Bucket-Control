@@ -32,8 +32,6 @@ def gps_now(num_atempts=50):
             return gps, start_time
 
 
-
-
 def check_waiting(data_path, meta_path):
     """
     Give a list of data files that are waiting for a meta data file to be written
@@ -53,6 +51,8 @@ def check_waiting(data_path, meta_path):
 def write_metadata(file,sidict, data_path, meta_path):
     json_dict = sidict
     unix_time = datetime.fromtimestamp(float(file.split("_")[1]))
+    year, month, day, hrs = unix_time.year, unix_time.month, unix_time.day, unix_time.hour
+    storage_path = f"/{year}/{month}/{day}/{hrs}/"
     gps,_= gps_now()
     # If we can get the current gps data then we will otherwise we use the start
     # times for both gps and the system to get a delta
@@ -62,12 +62,23 @@ def write_metadata(file,sidict, data_path, meta_path):
         json_dict["lon"] = gps["lon"]
         json_dict["lat_deg"] = gps["lat_deg"]
         json_dict["lon_deg"] = gps["lon_deg"]
+        json_dict["location"] = {"station_name": json_dict["sensor_name"],
+                                 "longitude":gps["lon_deg"],
+                                 "latitude":gps["lat_deg"],
+                                 "resolution":"exact",
+                                 "altitude":float(gps["alt"])}
+        json_dict["data_file"]={"bucket":sidict["Bucket_name"],
+                                "path":storage_path,
+                                "name":file+".wav"
+                                }
         json_dict["gps_date_time"] = str(np.datetime64(datetime.strptime(gps["datetime"],"%d%m%y%H%M%S")))
         system_time_now = np.datetime64(datetime.now())
         gps_time_now = np.datetime64(datetime.strptime(gps["datetime"],"%d%m%y%H%M%S"))
         system_time_diff = system_time_now - np.datetime64(unix_time)
         json_dict["start_time_gps"] = str(gps_time_now - system_time_diff)
         json_dict["start_time_system"] = str(np.datetime64(unix_time))
+        json_dict["start_time"] = json_dict["start_time_gps"]
+        json_dict["end_time"] = str(gps_time_now - system_time_diff + np.timedelta64(30,"s"))
     else:
         time_delta = np.timedelta64(sidict["delta_T_SysvGPS_ms"], "ms")
         json_dict["start_time_gps"] = str(np.datetime64(unix_time) + np.timedelta64(time_delta,"ms"))
@@ -83,9 +94,10 @@ def write_metadata(file,sidict, data_path, meta_path):
         checksum = sha256(hash_file.read()).hexdigest()
     
     json_dict["checksum"] = checksum
-    
+    meta_data_key_list = ['group', 'device_id', 'sensor_id', 'modality', 'num_channels', 'start_time', 'end_time', 'sample_rate', 'location', 'data_file',"checksum"]
+    json_subset = {key:json_dict[key] for key in meta_data_key_list}
     with open(f"{meta_path}{file}.json","w+") as jfile:
-        json.dump(json_dict, jfile)
+        json.dump(json_subset, jfile)
     
 def move_to_waiting(file, data_path, meta_path, waiting_path):
     zip_name = f"{waiting_path}{file}.zip"

@@ -32,7 +32,9 @@ def get_gps():
     buff = rec_buff.decode().split(":")[1:][0].replace(" ","")
     if not any([i=="N" or i=="S" for i in buff]):
         gps_dict["gps_valid"]=False
+        stream.close()
         return gps_dict
+    
     buff = buff.split(",")
     gps_dict["lat"] = buff[0]+buff[1]
     gps_dict["lon"] = buff[2]+buff[3]

@@ -1,5 +1,10 @@
 {
-    "sensor_name" : "InsertSensorName",
+    "group" : "BE",
+    "device_id" : "Device_1",
+    "sensor_id":"Sensor_1",
+    "modality":"Audio",
+    "num_channels": 1,
+    "sensor_name" : "LTCOLM",
     "sample_rate" : 16000,
     "collect_duration": 30,
     "location" : "Insert location decription",
@@ -10,8 +15,7 @@
     "waiting_path":"./Waiting/",
     "not_sent":"./Not/",
     "mac_address" : "put mac_address here",
-    "Bucket_name" : "s3://aftac-test-ore2-temp/",
+    "Bucket_name" : "s3://aftac-be2024/",
     "dtype" : "f4/np.float32",
-    "channel":"audio",
-    "staname":"RH{vol_number}s{sensor_number 2 digit}"
+    "channel":"audio"
 }
