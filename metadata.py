@@ -60,8 +60,8 @@ def write_metadata(file,sidict, data_path, meta_path):
         #TODO double check time logic
         json_dict["lat"] = gps["lat"]
         json_dict["lon"] = gps["lon"]
-        json_dict["lat_deg"] = gps["lat_deg"]
-        json_dict["lon_deg"] = gps["lon_deg"]
+        json_dict["lat_deg"] = np.round(gps["lat_deg"],6)
+        json_dict["lon_deg"] = np.round(gps["lon_deg"], 6)
         json_dict["location"] = {"station_name": json_dict["sensor_name"],
                                  "longitude":gps["lon_deg"],
                                  "latitude":gps["lat_deg"],
@@ -94,10 +94,10 @@ def write_metadata(file,sidict, data_path, meta_path):
         checksum = sha256(hash_file.read()).hexdigest()
     
     json_dict["checksum"] = checksum
-    meta_data_key_list = ['group', 'device_id', 'sensor_id', 'modality', 'num_channels', 'start_time', 'end_time', 'sample_rate', 'location', 'data_file',"checksum"]
-    json_subset = {key:json_dict[key] for key in meta_data_key_list}
+    # meta_data_key_list = ['group', 'device_id', 'sensor_id', 'modality', 'num_channels', 'start_time', 'end_time', 'sample_rate', 'location', 'data_file',"checksum"]
+    # json_subset = {key:json_dict[key] for key in meta_data_key_list}
     with open(f"{meta_path}{file}.json","w+") as jfile:
-        json.dump(json_subset, jfile)
+        json.dump(json_dict, jfile)
     
 def move_to_waiting(file, data_path, meta_path, waiting_path):
     zip_name = f"{waiting_path}{file}.zip"
