@@ -5,6 +5,7 @@
     "modality":"Audio",
     "num_channels": 1,
     "sensor_name" : "LTCOLM",
+    "staname":"LTCOLM",
     "sample_rate" : 16000,
     "collect_duration": 30,
     "location" : "Insert location decription",
